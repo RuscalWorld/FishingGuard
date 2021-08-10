@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ruscalworld.fishingguard.FishingGuard;
 import ru.ruscalworld.storagelib.DefaultModel;
 import ru.ruscalworld.storagelib.Storage;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @Model(table = "guilds")
 public class GuildSettings extends DefaultModel {
+    private static final Logger logger = LoggerFactory.getLogger("GuildSettings");
     private static final Storage storage = FishingGuard.getInstance().storage();
 
     @Property(column = "guild_id")
@@ -53,13 +56,15 @@ public class GuildSettings extends DefaultModel {
     public Optional<Invite> getInvite() {
         if (this.getInviteCode() == null) {
             if (!this.getGuild().getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE)) return Optional.empty();
-            TextChannel channel = this.getGuild().getDefaultChannel();
+            TextChannel channel = this.getGuild().getRulesChannel();
+            if (channel == null) channel = this.getGuild().getDefaultChannel();
             if (channel == null) channel = this.getGuild().getTextChannels().get(0);
             if (channel == null) return Optional.empty();
 
             try {
                 return Optional.ofNullable(channel.createInvite().setMaxAge(0).complete());
             } catch (Exception exception) {
+                logger.warn("Unable to create invite for guild {}", this.getGuild().getName(), exception);
                 return Optional.empty();
             }
         }

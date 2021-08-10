@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,8 +49,10 @@ public class LinkManager {
     }
 
     public static boolean checkEmbed(MessageEmbed embed, Guild guild) {
-        if (embed.getTitle() == null) return false;
-        if (embed.getTitle().contains("Discord Nitro") && embed.getTitle().contains("Steam")) {
+        String title = embed.getTitle();
+        if (title == null) return false;
+        title = title.toLowerCase(Locale.ROOT);
+        if (title.contains("discord nitro") && title.contains("steam") && (title.contains("free") || title.contains("бесплатно"))) {
             CompletableFuture.runAsync(() -> {
                 if (embed.getUrl() == null) return;
 
