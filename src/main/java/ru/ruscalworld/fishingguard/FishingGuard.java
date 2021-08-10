@@ -55,6 +55,8 @@ public record FishingGuard(Storage storage, JDA jda) {
 
     public void onStart() throws InvalidModelException, SQLException {
         logger.info("Successfully logged in as {}", this.jda().getSelfUser().getAsTag());
+//        storage.save(new BannedAddress("95.181.172.209"));
+//        storage.save(new BannedAddress("95.181.172.206"));
     }
 
     public void shutdown() {

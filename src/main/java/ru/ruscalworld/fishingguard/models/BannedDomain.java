@@ -37,6 +37,7 @@ public class BannedDomain extends BannedEntry {
     }
 
     public static BannedDomain banDomain(String domain, Guild guild) throws InvalidModelException, SQLException, NotFoundException {
+        if (getByDomain(domain).isPresent()) return null;
         BannedDomain bannedDomain = new BannedDomain(domain);
         bannedDomain.setGuildID(guild.getId());
 

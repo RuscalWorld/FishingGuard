@@ -1,5 +1,6 @@
 package ru.ruscalworld.fishingguard.models;
 
+import net.dv8tion.jda.api.entities.Guild;
 import ru.ruscalworld.fishingguard.FishingGuard;
 import ru.ruscalworld.storagelib.Storage;
 import ru.ruscalworld.storagelib.annotations.Model;
@@ -28,6 +29,15 @@ public class BannedAddress extends BannedEntry {
             return Optional.ofNullable(bannedAddress);
         } catch (InvalidModelException | SQLException | NotFoundException ignored) { }
         return Optional.empty();
+    }
+
+    public static BannedAddress banAddress(InetAddress address, Guild guild) throws InvalidModelException, SQLException, NotFoundException {
+        if (getByAddress(address).isPresent()) return null;
+        BannedAddress bannedAddress = new BannedAddress(address.getHostAddress());
+        bannedAddress.setGuildID(guild.getId());
+
+        long id = storage.save(bannedAddress);
+        return storage.retrieve(BannedAddress.class, id);
     }
 
     public BannedAddress(String address) {

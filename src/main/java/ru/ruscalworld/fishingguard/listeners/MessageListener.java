@@ -21,17 +21,14 @@ public class MessageListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         if (event.getMember() == null) return;
-        List<URL> links = LinkManager.parseLinks(event.getMessage().getContentDisplay());
 
-        for (URL link : links) {
-            try {
-                if (LinkManager.checkLink(link, event.getGuild())) {
-                    event.getMessage().delete().queue();
-                    Incident.create(event.getMember(), event.getMessage().getContentRaw());
-                }
-            } catch (Exception exception) {
-                logger.error("Unable to process link {}", link.toString(), exception);
+        try {
+            if (LinkManager.checkMessage(event.getMessage())) {
+                event.getMessage().delete().queue();
+                Incident.create(event.getMember(), event.getMessage().getContentRaw());
             }
+        } catch (Exception exception) {
+            logger.error("Unable to process message", exception);
         }
     }
 }

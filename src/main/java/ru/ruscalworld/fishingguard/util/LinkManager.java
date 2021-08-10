@@ -1,6 +1,8 @@
 package ru.ruscalworld.fishingguard.util;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ruscalworld.fishingguard.models.BannedAddress;
@@ -31,6 +33,41 @@ public class LinkManager {
         }
 
         return links;
+    }
+
+    public static boolean checkMessage(Message message) {
+        for (URL link : parseLinks(message.getContentDisplay())) {
+            if (checkLink(link, message.getGuild())) return true;
+        }
+
+        for (MessageEmbed embed : message.getEmbeds()) {
+            if (checkEmbed(embed, message.getGuild())) return true;
+        }
+
+        return false;
+    }
+
+    public static boolean checkEmbed(MessageEmbed embed, Guild guild) {
+        if (embed.getTitle() == null) return false;
+        if (embed.getTitle().contains("Discord Nitro") && embed.getTitle().contains("Steam")) {
+            CompletableFuture.runAsync(() -> {
+                if (embed.getUrl() == null) return;
+
+                try {
+                    URL url = new URL(embed.getUrl());
+                    InetAddress address = InetAddress.getByName(url.getHost());
+                    BannedAddress bannedAddress = BannedAddress.banAddress(address, guild);
+                    if (bannedAddress != null)
+                        logger.info("Banned address {} because it was resolved while checking suspicious embed", bannedAddress.getAddress());
+                } catch (Exception exception) {
+                    logger.error("Unable to ban address", exception);
+                }
+            });
+
+            return true;
+        }
+
+        return false;
     }
 
     public static boolean checkLink(URL url, Guild guild) {
