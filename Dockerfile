@@ -1,4 +1,4 @@
-FROM openjdk:16.0-jre
+FROM openjdk:16-jdk
 
 WORKDIR /home/container
 ADD build/libs/FishingGuard-1.0-all.jar .
