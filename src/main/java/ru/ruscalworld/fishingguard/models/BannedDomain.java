@@ -1,5 +1,8 @@
 package ru.ruscalworld.fishingguard.models;
 
+import net.dv8tion.jda.api.entities.Guild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ruscalworld.fishingguard.FishingGuard;
 import ru.ruscalworld.storagelib.Storage;
 import ru.ruscalworld.storagelib.annotations.Model;
@@ -31,6 +34,14 @@ public class BannedDomain extends BannedEntry {
             return Optional.ofNullable(bannedDomain);
         } catch (InvalidModelException | SQLException | NotFoundException ignored) { }
         return Optional.empty();
+    }
+
+    public static BannedDomain banDomain(String domain, Guild guild) throws InvalidModelException, SQLException, NotFoundException {
+        BannedDomain bannedDomain = new BannedDomain(domain);
+        bannedDomain.setGuildID(guild.getId());
+
+        long id = storage.save(bannedDomain);
+        return storage.retrieve(BannedDomain.class, id);
     }
 
     public String getDomain() {
