@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.entities.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ruscalworld.fishingguard.listeners.MessageListener;
-import ru.ruscalworld.fishingguard.models.BannedAddress;
-import ru.ruscalworld.fishingguard.models.BannedDomain;
 import ru.ruscalworld.storagelib.Storage;
 import ru.ruscalworld.storagelib.exceptions.InvalidModelException;
 import ru.ruscalworld.storagelib.impl.SQLiteStorage;
@@ -53,10 +51,8 @@ public record FishingGuard(Storage storage, JDA jda) {
         }
     }
 
-    public void onStart() throws InvalidModelException, SQLException {
+    public void onStart() {
         logger.info("Successfully logged in as {}", this.jda().getSelfUser().getAsTag());
-//        storage.save(new BannedAddress("95.181.172.209"));
-//        storage.save(new BannedAddress("95.181.172.206"));
     }
 
     public void shutdown() {
