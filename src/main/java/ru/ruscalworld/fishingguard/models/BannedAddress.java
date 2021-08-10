@@ -2,6 +2,7 @@ package ru.ruscalworld.fishingguard.models;
 
 import net.dv8tion.jda.api.entities.Guild;
 import ru.ruscalworld.fishingguard.FishingGuard;
+import ru.ruscalworld.fishingguard.util.WhitelistedIPs;
 import ru.ruscalworld.storagelib.Storage;
 import ru.ruscalworld.storagelib.annotations.Model;
 import ru.ruscalworld.storagelib.annotations.Property;
@@ -32,6 +33,7 @@ public class BannedAddress extends BannedEntry {
     }
 
     public static BannedAddress banAddress(InetAddress address, Guild guild) throws InvalidModelException, SQLException, NotFoundException {
+        WhitelistedIPs.ensureIsNotWhitelisted(address);
         if (getByAddress(address).isPresent()) return null;
         BannedAddress bannedAddress = new BannedAddress(address.getHostAddress());
         bannedAddress.setGuildID(guild.getId());
