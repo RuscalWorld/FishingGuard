@@ -42,32 +42,7 @@ public class LinkManager {
         }
 
         for (MessageEmbed embed : message.getEmbeds()) {
-            if (checkEmbed(embed, message.getGuild())) return true;
-        }
-
-        return false;
-    }
-
-    public static boolean checkEmbed(MessageEmbed embed, Guild guild) {
-        String title = embed.getTitle();
-        if (title == null) return false;
-        title = title.toLowerCase(Locale.ROOT);
-        if (title.contains("discord nitro") && title.contains("steam") && (title.contains("free") || title.contains("бесплатно"))) {
-            CompletableFuture.runAsync(() -> {
-                if (embed.getUrl() == null) return;
-
-                try {
-                    URL url = new URL(embed.getUrl());
-                    InetAddress address = InetAddress.getByName(url.getHost());
-                    BannedAddress bannedAddress = BannedAddress.banAddress(address, guild);
-                    if (bannedAddress != null)
-                        logger.info("Banned address {} because it was resolved while checking suspicious embed", bannedAddress.getAddress());
-                } catch (Exception exception) {
-                    logger.error("Unable to ban address", exception);
-                }
-            });
-
-            return true;
+            if (EmbedChecker.checkEmbed(embed, message.getGuild())) return true;
         }
 
         return false;
