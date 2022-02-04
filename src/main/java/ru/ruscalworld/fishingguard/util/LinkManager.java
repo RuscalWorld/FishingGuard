@@ -17,16 +17,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LinkManager {
     private static final Logger logger = LoggerFactory.getLogger("LinkManager");
+    private static final Pattern urlPattern = Pattern.compile("^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
     public static List<URL> parseLinks(String string) {
         List<URL> links = new ArrayList<>();
 
-        for (String word : string.split(" ")) {
-            // https://www.urlregex.com
-            if (!word.matches("^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]")) continue;
+        Matcher matcher = urlPattern.matcher(string);
+        while (matcher.find()) {
+            String word = matcher.group(1);
 
             try {
                 links.add(new URL(word));
