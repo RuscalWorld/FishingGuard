@@ -21,14 +21,14 @@ import java.util.regex.Pattern;
 
 public class LinkManager {
     private static final Logger logger = LoggerFactory.getLogger("LinkManager");
-    private static final Pattern urlPattern = Pattern.compile("^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+    private static final Pattern urlPattern = Pattern.compile("(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
     public static List<URL> parseLinks(String string) {
         List<URL> links = new ArrayList<>();
 
         Matcher matcher = urlPattern.matcher(string);
         while (matcher.find()) {
-            String word = matcher.group(1);
+            String word = matcher.group();
 
             try {
                 links.add(new URL(word));
